@@ -1,0 +1,350 @@
+# ============================================================================
+# MOXIE Instagram Reel Feature Extraction System - .gitignore
+# ============================================================================
+
+# ============================================================================
+# SENSITIVE FILES - NEVER COMMIT
+# ============================================================================
+# Environment variables and API keys
+.env
+.env.local
+.env.production
+.env.staging
+*.env
+
+# Google Sheets credentials
+credentials.json
+service-account-key.json
+google-credentials.json
+
+# API keys and secrets
+api_keys.txt
+secrets.json
+config_private.py
+
+# ============================================================================
+# DATA FILES - TOO LARGE FOR GIT
+# ============================================================================
+# Downloaded video cache
+reels_video_cache/
+_reel_cache/
+*.mp4
+*.avi
+*.mov
+*.mkv
+
+# Apify metadata cache
+apify_metadata_cache/
+cache_apify/
+*.parquet
+
+# Output files
+final_creator_scores.csv
+detailed_reel_data.csv
+sun_frame_data.csv
+background_scores_robust.csv
+final_aesthetic_scores.csv
+final_combined_aesthetic.csv
+
+# Input data (may contain sensitive creator info)
+new_creators.csv
+train_data.csv
+creator_list.csv
+
+# Checkpoint files
+checkpoints/
+*.checkpoint
+
+# Temporary processing files
+temp_*/
+temp_bg_content/
+temp_content/
+
+# ============================================================================
+# MODEL FILES - TOO LARGE FOR GIT
+# ============================================================================
+# Pre-trained models (download separately)
+models/*.pth
+models/*.pt
+models/*.bin
+models/*.h5
+models/*.pkl
+models/*.joblib
+
+# YOLO models
+yolov*.pt
+*.weights
+
+# Whisper models cache
+~/.cache/whisper/
+
+# Hugging Face models cache
+~/.cache/huggingface/
+
+# ============================================================================
+# PYTHON
+# ============================================================================
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+migrate_aesthetics.py
+
+# C extensions
+*.so
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# PyInstaller
+*.manifest
+*.spec
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+cover/
+
+# Virtual environments
+venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+.venv/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# IPython
+profile_default/
+ipython_config.py
+
+# pyenv
+.python-version
+
+# pipenv
+Pipfile.lock
+
+# poetry
+poetry.lock
+
+# ============================================================================
+# SYSTEM FILES
+# ============================================================================
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon
+._*
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+*.tmp
+*.temp
+Desktop.ini
+$RECYCLE.BIN/
+*.cab
+*.msi
+*.msix
+*.msm
+*.msp
+*.lnk
+
+# Linux
+*~
+.fuse_hidden*
+.directory
+.Trash-*
+.nfs*
+
+# ============================================================================
+# IDE / EDITOR FILES
+# ============================================================================
+# VSCode
+.vscode/
+*.code-workspace
+
+# PyCharm
+.idea/
+*.iws
+*.iml
+*.ipr
+
+# Sublime Text
+*.sublime-project
+*.sublime-workspace
+
+# Vim
+*.swp
+*.swo
+*~
+
+# Emacs
+*~
+\#*\#
+/.emacs.desktop
+/.emacs.desktop.lock
+*.elc
+auto-save-list
+tramp
+.\#*
+
+# ============================================================================
+# LOGS AND DEBUGGING
+# ============================================================================
+# Log files
+*.log
+logs/
+log/
+
+# Debug files
+debug/
+*.debug
+
+# Error dumps
+*.dmp
+
+# ============================================================================
+# PROCESSING ARTIFACTS
+# ============================================================================
+# Image processing temp files
+*.jpg.tmp
+*.png.tmp
+*.jpeg.tmp
+
+# Audio processing temp files
+*.wav.tmp
+*.mp3.tmp
+
+# Video processing temp files
+*.mp4.tmp
+*.avi.tmp
+
+# OCR temp files
+ocr_temp/
+
+# Face detection temp files
+faces_temp/
+
+# ============================================================================
+# PACKAGE MANAGERS
+# ============================================================================
+# npm
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# ============================================================================
+# CLOUD AND DEPLOYMENT
+# ============================================================================
+# Docker
+.dockerignore
+Dockerfile.local
+
+# Kubernetes
+*.yaml.local
+*.yml.local
+
+# Terraform
+*.tfstate
+*.tfstate.*
+.terraform/
+
+# ============================================================================
+# BACKUP FILES
+# ============================================================================
+*.bak
+*.backup
+*.old
+*_backup
+*_old
+backup_*/
+
+# ============================================================================
+# CUSTOM PROJECT EXCLUSIONS
+# ============================================================================
+# Aesthetic analysis outputs
+aesthetics/triangulated_heatmap.png
+aesthetics/*.csv
+
+# Test outputs
+test_outputs/
+test_results/
+
+# Experimental scripts
+experimental/
+scratch/
+playground/
+
+# Documentation builds
+docs/_build/
+site/
+
+# ============================================================================
+# KEEP THESE FILES (FORCE INCLUDE)
+# ============================================================================
+# Keep important config templates
+!.env.example
+!config.py
+!requirements.txt
+!requirements_base.txt
+
+# Keep model README but not actual models
+!models/README.md
+
+# Keep example files
+!examples/
+!examples/*.py
+
+# Keep essential documentation
+!README.md
+!INSTALLATION.md
+!ATTRACTIVENESS_INTEGRATION.md
+
+# ============================================================================
+# END OF .gitignore
+# ============================================================================
