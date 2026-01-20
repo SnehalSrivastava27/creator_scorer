@@ -23,6 +23,7 @@ from easyocr import Reader
 from dotenv import load_dotenv
 from apify_client import ApifyClient
 from ultralytics import YOLO
+from mine_redis import get_files_gem
 
 from features.creativity import creativity_analyzer
 from features.gemini_analysis import gemini_analyzer
@@ -1121,8 +1122,19 @@ def process_creator_with_checkpoints(creator: str, all_rows: list, sun_frame_row
         "eye_contact_avg_score_0_10": df.get('eye_contact_score_0_10', pd.Series([0])).mean(),
         "series_reel_mean": df['series_flag'].mean(),
         "avg_captioned_reels": df.get('has_dynamic_captions', pd.Series([0])).mean(),
+        "avg_english_pct_non_music": nm['english_pct'].mean() if not nm.empty else 0,
+        "gemini_genz_word_count": df.get("gemini_genz_word_count", pd.Series([0])).mean(),
+        "gemini_is_marketing": df.get("gemini_is_marketing", pd.Series([0])).mean(),
+        "gemini_is_educational": df.get("gemini_is_educational", pd.Series([0])).mean(),
+        "gemini_has_humour": df.get("gemini_has_humour", pd.Series([0])).mean(),
+        "gemini_comment_sentiment_counts.agreeing": df.get("gemini_comment_sentiment_counts_agreeing", pd.Series([0])).mean(),
+        "gemini_comment_sentiment_counts.appreciating": df.get("gemini_comment_sentiment_counts_appreciating", pd.Series([0])).mean(),
+        "gemini_comment_sentiment_counts.neutral": df.get("gemini_comment_sentiment_counts_neutral", pd.Series([0])).mean(),
+        "mean_hist_score": df.get("hist_score_0_10", pd.Series([0])).mean(),
+        "mean_scene_score": df.get("scene_score_0_10", pd.Series([0])).mean(),
+        "mean_face_density": df.get("face_frame_density", pd.Series([0])).mean(),
+        # Additional metrics for completeness
         "avg_word_count": df['word_count'].mean(),
-        "avg_genz_word_count": df.get("gemini_genz_word_count", pd.Series([0])).mean(),
         "marketing_ratio": df.get("gemini_is_marketing", pd.Series([0])).mean(),
         "educational_ratio": df.get("gemini_is_educational", pd.Series([0])).mean(),
         "vlog_ratio": df.get("gemini_is_vlog", pd.Series([0])).mean(),
@@ -1133,9 +1145,7 @@ def process_creator_with_checkpoints(creator: str, all_rows: list, sun_frame_row
         "comments_negative": df.get("gemini_comment_sentiment_counts_negative", pd.Series([0])).sum(),
         "comments_neutral": df.get("gemini_comment_sentiment_counts_neutral", pd.Series([0])).sum(),
         "avg_english_pct": nm['english_pct'].mean() if not nm.empty else 0,
-        "mean_hist_score": df.get("hist_score_0_10", pd.Series([0])).mean(),
         "mean_clip_score": df.get("clip_score_0_10", pd.Series([0])).mean(),
-        "mean_scene_score": df.get("scene_score_0_10", pd.Series([0])).mean(),
         "avg_sun_exposure": df.get("sun_exposure_0_10_A", pd.Series([0])).mean(),
         "avg_attractiveness": df.get("composite_aesthetic_score", pd.Series([0])).mean(),
         "avg_total_accessories": df.get("total_accessories", pd.Series([0])).mean(),
@@ -1246,18 +1256,34 @@ if __name__ == "__main__":
         for creator in df_all_reels['creator'].unique():
             creator_data = df_all_reels[df_all_reels['creator'] == creator]
             
+            # Filter non-music reels for English percentage calculation
+            non_music_data = creator_data[~creator_data['is_music_only']]
+            
             # Compute aggregated metrics - only the specified scores
             agg_row = {
                 'creator': creator,
                 'total_reels_processed': len(creator_data),
+                # Required features from the list
+                'mean_hist_score': creator_data.get('hist_score_0_10', pd.Series([0])).mean(),
+                'eye_contact_avg_score_0_10': creator_data['eye_contact_score_0_10'].mean(),
+                'series_reel_mean': creator_data['series_flag'].mean(),
+                'avg_captioned_reels': creator_data.get('has_dynamic_captions', pd.Series([0])).mean(),
+                'avg_english_pct_non_music': non_music_data['english_pct'].mean() if not non_music_data.empty else 0,
+                'gemini_genz_word_count': creator_data.get('gemini_genz_word_count', pd.Series([0])).mean(),
+                'gemini_is_marketing': creator_data.get('gemini_is_marketing', pd.Series([0])).mean(),
+                'gemini_is_educational': creator_data.get('gemini_is_educational', pd.Series([0])).mean(),
+                'gemini_has_humour': creator_data.get('gemini_has_humour', pd.Series([0])).mean(),
+                'gemini_comment_sentiment_counts.agreeing': creator_data.get('gemini_comment_sentiment_counts_agreeing', pd.Series([0])).mean(),
+                'gemini_comment_sentiment_counts.appreciating': creator_data.get('gemini_comment_sentiment_counts_appreciating', pd.Series([0])).mean(),
+                'gemini_comment_sentiment_counts.neutral': creator_data.get('gemini_comment_sentiment_counts_neutral', pd.Series([0])).mean(),
+                'mean_scene_score': creator_data.get('scene_score_0_10', pd.Series([0])).mean(),
+                'mean_face_density': creator_data.get('face_frame_density', pd.Series([0])).mean(),
+                # Additional useful metrics
                 'avg_word_count': creator_data['word_count'].mean(),
                 'avg_english_pct': creator_data['english_pct'].mean(),
                 'music_only_ratio': creator_data['is_music_only'].mean(),
                 'avg_sun_exposure': creator_data['sun_exposure_0_10_A'].mean(),
-                'sun_exposure_0_10_A': creator_data['sun_exposure_0_10_A'].mean(),  # Same as avg_sun_exposure
-                'eye_contact_score_0_10': creator_data['eye_contact_score_0_10'].mean(),
-                'hist_score_0_10': creator_data.get('hist_score_0_10', pd.Series([0])).mean(),
-                'scene_score_0_10': creator_data.get('scene_score_0_10', pd.Series([0])).mean(),
+                'sun_exposure_0_10_A': creator_data['sun_exposure_0_10_A'].mean(),
                 'clip_score_0_10': creator_data.get('clip_score_0_10', pd.Series([0])).mean(),
                 'avg_total_accessories': creator_data['total_accessories'].mean(),
             }
@@ -1276,6 +1302,13 @@ if __name__ == "__main__":
             creator_aggregated.append(agg_row)
         
         df_final = pd.DataFrame(creator_aggregated)
+        
+        # Compute outlier_2sigma_ratio for each creator
+        from features.creativity import compute_creator_outlier_ratios
+        outlier_ratios = compute_creator_outlier_ratios(df_all_reels)
+        
+        # Add outlier ratios to final dataframe
+        df_final['outlier_2sigma_ratio'] = df_final['creator'].map(outlier_ratios).fillna(0.0)
         
         # Save final results
         df_final.to_csv(OUTPUT_CSV, index=False)

@@ -34,7 +34,7 @@ import instaloader
 from config import APIFY_API_KEY, GEMINI_API_KEY
 
 # Import the prompt from the separate file
-from gemini_prompt import GEMINI_PROMPT
+# from gemini_prompt import GEMINI_PROMPT
 
 # Suppress logging
 logging.getLogger("apify_client").setLevel(logging.ERROR)
